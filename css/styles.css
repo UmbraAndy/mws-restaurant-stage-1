@@ -140,6 +140,7 @@ nav h1 a {
   margin: 0;
   padding: 30px 15px 60px;
   text-align: center;
+  display: grid;/*Make list container grid */
 }
 #restaurants-list li {
   background-color: #fff;
@@ -291,11 +292,38 @@ nav h1 a {
 }
 
 
-/*Styling for phones */
+/*Styling for small */
 @media screen and (max-width: 420px){
   /* Make filter options take more space*/
   .filter-options select {
     width: calc(100% - 22px);
+  }
+
+}
+
+/*Styling for medium*/
+@media screen and (min-width: 600px){
+  #restaurants-list{
+    grid-template-columns: 50% 50%;
+  }
+}
+
+/*Styling for large*/
+@media screen and (min-width: 900px){
+  #restaurants-list{
+    grid-template-columns: 33.33% 33.34% 33.33%;
+  }
+}
+
+/*Styling for x-large*/
+@media screen and (min-width: 1200px){
+  #restaurants-list{
+    grid-template-columns: 25% 25% 25% 25%;
+  }
+
+  #maincontent{
+    max-width: 1200px;
+    margin: auto;
   }
 
 }
