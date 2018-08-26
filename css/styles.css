@@ -278,3 +278,13 @@ nav h1 a {
 #restaurant-hours td {
   color: #666;
 }
+
+.leaflet-control-zoom a{
+  padding: 1.5em;
+  margin: 32px;
+  border: 2px solid rgba(0,0,0,0.2);
+}
+
+.leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
+  border: none !important;
+}
