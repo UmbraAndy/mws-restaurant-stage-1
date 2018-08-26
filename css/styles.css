@@ -282,10 +282,20 @@ nav h1 a {
 
 .leaflet-control-zoom a{
   padding: 1.5em;
-  margin: 32px;
+  margin-top: 32px;
   border: 2px solid rgba(0,0,0,0.2);
 }
 
 .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
   border: none !important;
+}
+
+
+/*Styling for phones */
+@media screen and (max-width: 420px){
+  /* Make filter options take more space*/
+  .filter-options select {
+    width: calc(100% - 22px);
+  }
+
 }
