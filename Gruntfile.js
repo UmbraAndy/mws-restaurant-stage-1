@@ -7,12 +7,10 @@ module.exports = function(grunt) {
             sizes: [{
               name: '1x',
               width: '20%',
-              suffix: '_1x',
               quality: 20
             },{
-              name: 'large',
+              name: '2x',
               width: '50%',
-              suffix: '_2x',
               quality: 40
             }]
           },
