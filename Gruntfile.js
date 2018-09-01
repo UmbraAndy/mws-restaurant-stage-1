@@ -10,7 +10,7 @@ module.exports = function(grunt) {
               quality: 20
             },{
               name: '2x',
-              width: '100%',
+              width: '800',
               quality: 40
             }]
           },
@@ -25,7 +25,7 @@ module.exports = function(grunt) {
     /* delte files in the img dir */
     clean: {
         dev: {
-          src: ['images'],
+          src: ['img'],
         },
       },      
     });
