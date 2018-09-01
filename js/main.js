@@ -152,6 +152,13 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   addMarkersToMap();
 }
 
+//splice density reation into image url
+function spliceDensityIntoImageUrl(url,density)
+{
+  url = url.replace(".",density+".");
+  return url;
+}
+
 /**
  * Create restaurant HTML.
  */
@@ -160,10 +167,13 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  let baseSrc = DBHelper.imageUrlForRestaurant(restaurant);
+  image.src = spliceDensityIntoImageUrl(baseSrc,"-1x");
   /**
    * Set the image attrtibutes for srcset and size
    */
+  image.srcset = spliceDensityIntoImageUrl(baseSrc ,"-1x") +" 1x, "+ spliceDensityIntoImageUrl(baseSrc,"-2x") +" 2x";
+  //image.si
   li.append(image);
 
   const name = document.createElement('h1');
