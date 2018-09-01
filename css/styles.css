@@ -183,7 +183,7 @@ nav h1 a {
   font-size: 10pt;
   margin: 15px 0 0;
   /*padding: 8px 30px 10px;*/
-  padding: 1.5em; /* Make touch target big */ 
+  padding: 1.2em; /* Make touch target big */ 
   text-align: center;
   text-decoration: none;
   text-transform: uppercase;
