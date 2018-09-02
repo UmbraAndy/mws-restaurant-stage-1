@@ -42,7 +42,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 #footer {
   background-color: #444;
-  color: #aaa;
+  color: #fff;
   font-size: 8pt;
   letter-spacing: 1px;
   padding: 25px;
@@ -76,6 +76,7 @@ nav h1 a {
     /* width: calc(50% - 80px); */
 }
 
+
 /* Display list items side by side */
 #breadcrumb li {
     display: inline;
@@ -88,15 +89,19 @@ nav h1 a {
     content: "/\00a0";
 }
 
+
+#breadcrumb li{
+  font-size: 1.2em;
+}
 /* Add a color to all links inside the list */
 #breadcrumb li a {
-    color: #0275d8;
+    color: #084d89;
     text-decoration: none;
 }
 
 /* Add a color on mouse-over */
 #breadcrumb li a:hover {
-    color: #01447e;
+    color: #084d89;
     text-decoration: underline;
 }
 /* ====================== Map ====================== */
@@ -134,7 +139,12 @@ nav h1 a {
   /*width: 200px;*/
   width: calc((100% - 44px) / 2);
 }
-
+.filter-options h2 {
+  color: #000;
+}
+.leaflet-control-attribution a{
+  color: #006891 !important;
+}
 /*Styles for focus*/
 .filter-options select:hover,
 .filter-options select:focus,
@@ -148,28 +158,9 @@ nav h1 a {
 .leaflet-control-attribution a:hover
 {
   outline: 0;
-  box-shadow: 0 0 8px 4px #f18200;
+  box-shadow: 0 0 8px 4px #c96b00;
 }
 
-/* #map:focus{
-  outline: 0;
-  box-shadow: 0 0 8px 4px #f18200;
-} */
-
-/* .leaflet-marker-icon:focus{
-  outline: 0;
-  box-shadow: 0 0 8px 4px #f18200;
-} */
-
-/* .leaflet-control-zoom a:focus{
-  outline: 0;
-  box-shadow: 0 0 8px 4px #f18200;
-
-} */
-/* .leaflet-control-attribution a:focus {
-  outline: 0;
-  border: 1px solid #f18200;
-} */
 #restaurants-list li a:focus,
 #restaurants-list li a:hover {
   outline: 0;
@@ -178,7 +169,7 @@ nav h1 a {
 
 
 /* .leaflet-control-zoom-out:focus{
-  border: 4px solid #f18200;
+  border: 4px solid #c96b00;
 } */
 /* leaflet-control-zoom  a leaflet-bar leaflet-control */
 /* ====================== Restaurant Listing ====================== */
@@ -210,7 +201,7 @@ nav h1 a {
   min-width: 100%;
 }
 #restaurants-list li h1 {
-  color: #f18200;
+  color: #a55500;
   font-family: Arial,sans-serif;
   font-size: 14pt;
   font-weight: 200;
@@ -224,7 +215,7 @@ nav h1 a {
   font-size: 11pt;
 }
 #restaurants-list li a {
-  background-color: orange;
+  background-color: #a55500;
   border-bottom: 3px solid #eee;
   color: #fff;
   display: inline-block;
@@ -265,7 +256,7 @@ nav h1 a {
   max-width:100%;
 }
 #restaurant-name {
-  color: #f18200;
+  color: #c96b00;
   font-family: Arial,sans-serif;
   font-size: 20pt;
   font-weight: 200;
@@ -315,7 +306,7 @@ nav h1 a {
   
 }
 #reviews-container h2 {
-  color: #f58500;
+  color: #c96b00;
   font-size: 24pt;
   font-weight: 300;
   letter-spacing: -1px;
@@ -334,19 +325,26 @@ nav h1 a {
   margin: 0 0 30px;
   overflow: hidden;
   padding: 20px 20px;
-  position: relative;
+  /* position: relative; */
   /* width: 85%; */
 }
 #reviews-list li p {
   margin: 0 0 10px;
 }
-#restaurant-hours td {
-  color: #666;
-}
 
 #restaurant-hours {
   width: 100%;
   margin-left: 32px;
+  
+
+}
+
+#restaurant-hours td{
+  color: #000;
+}
+
+#resturant-info{
+  padding-left: 32px;
 }
 .leaflet-control-zoom a{
   padding: 1.5em;
@@ -365,24 +363,23 @@ nav h1 a {
   .filter-options select {
     width: calc(100% - 22px);
   }
-
+  #restaurant-hours{
+    font-size: 1em;
+  }
 }
 
 /*Styling for medium*/
-@media screen and (min-width: 600px){
+@media screen and (min-width: 421px) and (max-width: 899px){
   #restaurants-list{
     grid-template-columns: 50% 50%;
   }
-  #restaurant-container{
-    grid-template-columns: 50% 50%;
-  }
-  #restaurant-hours{
-    margin-top: 75px;
-  }
+
   #reviews-list{
     grid-template-columns: 50% 50%;
-  }  
-  
+  }   
+  #resturant-info{
+    padding-left: 0px;
+  }
 }
 
 /*Styling for large*/
@@ -390,10 +387,15 @@ nav h1 a {
   #restaurants-list{
     grid-template-columns: 33.33% 33.34% 33.33%;
   }
-
+  #restaurant-container{
+    grid-template-columns: 50% 50%;
+  }
+  #restaurant-hours{
+    margin-top: 75px;
+  }  
   #reviews-list{
     grid-template-columns: 33.33% 33.34% 33.33%;
-  }
+  }  
 }
 
 /*Styling for x-large*/
