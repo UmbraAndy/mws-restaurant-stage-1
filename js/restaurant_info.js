@@ -76,6 +76,14 @@ fetchRestaurantFromURL = (callback) => {
   }
 }
 
+
+//splice density reation into image url
+function spliceDensityIntoImageUrl(url,density)
+{
+  url = url.replace(".",density+".");
+  return url;
+}
+
 /**
  * Create restaurant HTML and add it to the webpage
  */
@@ -87,8 +95,13 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.className = 'restaurant-img';
+  let baseSrc = DBHelper.imageUrlForRestaurant(restaurant);
+  image.src = spliceDensityIntoImageUrl(baseSrc,"-1x");
+  image.srcset = spliceDensityIntoImageUrl(baseSrc ,"-1x") +" 1x, "+ spliceDensityIntoImageUrl(baseSrc,"-2x") +" 2x";
+
+  //set alt tag for image
+  image.alt =  restaurant.name  
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
