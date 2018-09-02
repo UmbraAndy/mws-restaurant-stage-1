@@ -133,6 +133,52 @@ nav h1 a {
   width: calc((100% - 44px) / 2);
 }
 
+/*Styles for focus*/
+.filter-options select:hover,
+.filter-options select:focus,
+#map:focus,
+#map:hover,
+.leaflet-marker-icon:focus,
+.leaflet-marker-icon:hover,
+.leaflet-control-zoom a:focus,
+.leaflet-control-zoom a:hover,
+.leaflet-control-attribution a:focus,
+.leaflet-control-attribution a:hover
+{
+  outline: 0;
+  box-shadow: 0 0 8px 4px #f18200;
+}
+
+/* #map:focus{
+  outline: 0;
+  box-shadow: 0 0 8px 4px #f18200;
+} */
+
+/* .leaflet-marker-icon:focus{
+  outline: 0;
+  box-shadow: 0 0 8px 4px #f18200;
+} */
+
+/* .leaflet-control-zoom a:focus{
+  outline: 0;
+  box-shadow: 0 0 8px 4px #f18200;
+
+} */
+/* .leaflet-control-attribution a:focus {
+  outline: 0;
+  border: 1px solid #f18200;
+} */
+#restaurants-list li a:focus,
+#restaurants-list li a:hover {
+  outline: 0;
+  box-shadow: 0 0 8px 4px #2C84CB;
+}
+
+
+/* .leaflet-control-zoom-out:focus{
+  border: 4px solid #f18200;
+} */
+/* leaflet-control-zoom  a leaflet-bar leaflet-control */
 /* ====================== Restaurant Listing ====================== */
 #restaurants-list {
   background-color: #f3f3f3;
