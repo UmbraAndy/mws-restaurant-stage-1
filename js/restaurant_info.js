@@ -1,6 +1,7 @@
 let restaurant;
 var newMap;
-
+//make it empty for local testing for github pages use /mws-restaurant-stage-1
+const PREFIX_PATH = "/mws-restaurant-stage-1";
 /**
  * Initialize map as soon as the page is loaded.
  */
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
 registerServiceworker = () =>{
   if(!navigator.serviceWorker) return;
-  navigator.serviceWorker.register('/sw.js');
+  navigator.serviceWorker.register(PREFIX_PATH+'/sw.js',{scope: PREFIX_PATH+'/'});
 }
 
 /**

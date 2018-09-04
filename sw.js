@@ -1,16 +1,17 @@
 const localCacheName = 'restaurant-v1';
-
+//make it empty for local testing for github pages use /mws-restaurant-stage-1
+const PREFIX_PATH = "/mws-restaurant-stage-1";
 self.addEventListener('install', installEvent =>{
     console.log('Starting install');
     const urlsRequestsToCache = [
-        '/',
-        '/index.html',
-        '/restaurant.html',
-        '/css/styles.css',
-        '/js/dbhelper.js',
-        '/js/main.js',
-        '/js/restaurant_info.js',
-        '/data/restaurants.json',
+        PREFIX_PATH+'/',
+        PREFIX_PATH+'/index.html',
+        PREFIX_PATH+'/restaurant.html',
+        PREFIX_PATH+'/css/styles.css',
+        PREFIX_PATH+'/js/dbhelper.js',
+        PREFIX_PATH+'/js/main.js',
+        PREFIX_PATH+'/js/restaurant_info.js',
+        PREFIX_PATH+'/data/restaurants.json',
         'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
         'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js'
     ]
