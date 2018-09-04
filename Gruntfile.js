@@ -7,11 +7,11 @@ module.exports = function(grunt) {
             sizes: [{
               name: '1x',
               width: '400',
-              quality: 20
+              quality: 50
             },{
               name: '2x',
               width: '800',
-              quality: 40
+              quality: 80
             }]
           },
           files: [{
