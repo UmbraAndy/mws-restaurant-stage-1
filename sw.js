@@ -39,7 +39,7 @@ self.addEventListener('activate',activateEvent =>{
 self.addEventListener('fetch',fetchEvent=>{
     const request = fetchEvent.request;
     fetchEvent.respondWith(
-        caches.match(request)
+        caches.match(request,{ignoreSearch:true})
         .then(response =>{
             if(response) return response;
             return fetch(request);
