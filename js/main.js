@@ -183,7 +183,7 @@ createRestaurantHTML = (restaurant) => {
   image.srcset = spliceDensityIntoImageUrl(baseSrc ,"-1x") +" 1x, "+ spliceDensityIntoImageUrl(baseSrc,"-2x") +" 2x";
 
   //set alt tag for image
-  image.alt =  restaurant.name;
+  image.alt =  "Image of "+restaurant.name;
   li.append(image);
 
   const name = document.createElement('h2');
