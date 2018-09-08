@@ -1,5 +1,4 @@
-const localCacheName = 'restaurant-v4';
-//make it empty for local testing for github pages use /mws-restaurant-stage-1
+const localCacheName = 'restaurant-v10';
 const PREFIX_PATH =".";
 self.addEventListener('install', installEvent =>{
     console.log('Starting install');
@@ -64,4 +63,12 @@ self.addEventListener('fetch',fetchEvent=>{
             });
         })
     )
+})
+
+//handle message event
+self.addEventListener('message', function (event) {
+    if (event.data.action === 'skipWaitingStage') {
+        self.skipWaiting();
+        console.log('SW skipWaiting');
+    }
 })

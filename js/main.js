@@ -16,11 +16,71 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-registerServiceworker = () =>{
-  if(!navigator.serviceWorker) return;
-  navigator.serviceWorker.register(PREFIX_PATH+'/sw.js',{scope: PREFIX_PATH+'/'});
+registerServiceworker = () => {
+  if (!navigator.serviceWorker) return;
+  navigator.serviceWorker.register(PREFIX_PATH + '/sw.js', { scope: PREFIX_PATH + '/' })
+    .then(serviceWorkerRegistration => {
+      //check to see if page was loaded by sw. if it wasnt, no need to check for sw states
+      if (!navigator.serviceWorker.controller) {
+        return;
+      }
+
+      //a sw is in waiting state
+      if (serviceWorkerRegistration.waiting) {
+        //notify the user
+        notifyUI();
+        return
+      }
+
+      // a sw is in insalling state
+      if (serviceWorkerRegistration.installing) {
+        monitorServiceWorkerState(serviceWorkerRegistration.installing);
+        return;
+      }
+
+      //if future update found
+      serviceWorkerRegistration.addEventListener('updatefound', ()=>{
+        monitorServiceWorkerState(serviceWorkerRegistration.installing);
+      })
+
+      //add event to check if new sw has taken over current page
+      navigator.serviceWorker.addEventListener('controllerchange',() =>{
+        window.location.reload();
+        console.log('Page reloaded');
+      })
+    });
 }
 
+notifyUI = (serviceWorker) => {
+  console.log('New update found in waiting');
+  showSnackBar();
+  var updateLink = document.getElementById("update_btn");
+  updateLink.onclick = () =>{
+    console.log("Requesting update");
+    serviceWorker.postMessage({action:'skipWaitingStage'});
+  }
+
+}
+
+monitorServiceWorkerState = (serviceWorker) => {
+  //check for state changes in the sw. If it changes to installed, nofify the UI
+  serviceWorker.addEventListener('statechange', () => {
+    if (serviceWorker.state == 'installed') {
+        notifyUI(serviceWorker)
+    }
+  })
+}
+
+dismissSnackBar = () =>{
+  var snackbar = document.getElementById("snackbar");
+  snackbar.className = "";
+}
+
+showSnackBar = () =>{
+  var snackbar = document.getElementById("snackbar");
+  console.log("Show snack");
+  snackbar.className = "show";
+}
 /**
  * Fetch all neighborhoods and set their HTML.
  */
@@ -81,10 +141,10 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
  */
 initMap = () => {
   self.newMap = L.map('map', {
-        center: [40.722216, -73.987501],
-        zoom: 12,
-        scrollWheelZoom: false
-      });
+    center: [40.722216, -73.987501],
+    zoom: 12,
+    scrollWheelZoom: false
+  });
   L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={mapboxToken}', {
     mapboxToken: 'pk.eyJ1IjoidW1icmFqYXZhIiwiYSI6ImNqa250bXI2eDFkNnczcW1nZ296ajJrOHcifQ.J5kKFOd3UMJyR_3_YqBo1A',
     maxZoom: 18,
@@ -161,9 +221,8 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 }
 
 //splice density reation into image url
-function spliceDensityIntoImageUrl(url,density)
-{
-  url = url.replace(".jpg",density+".jpg");
+function spliceDensityIntoImageUrl(url, density) {
+  url = url.replace(".jpg", density + ".jpg");
   return url;
 }
 
@@ -176,14 +235,14 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   let baseSrc = DBHelper.imageUrlForRestaurant(restaurant);
-  image.src = spliceDensityIntoImageUrl(baseSrc,"-1x");
+  image.src = spliceDensityIntoImageUrl(baseSrc, "-1x");
   /**
    * Set the image attrtibutes for srcset and size
    */
-  image.srcset = spliceDensityIntoImageUrl(baseSrc ,"-1x") +" 1x, "+ spliceDensityIntoImageUrl(baseSrc,"-2x") +" 2x";
+  image.srcset = spliceDensityIntoImageUrl(baseSrc, "-1x") + " 1x, " + spliceDensityIntoImageUrl(baseSrc, "-2x") + " 2x";
 
   //set alt tag for image
-  image.alt =  "Image of "+restaurant.name;
+  image.alt = "Image of " + restaurant.name;
   li.append(image);
 
   const name = document.createElement('h2');
@@ -200,7 +259,7 @@ createRestaurantHTML = (restaurant) => {
 
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
-  more.setAttribute('arial-label', 'View detail for '+restaurant.name);
+  more.setAttribute('arial-label', 'View detail for ' + restaurant.name);
   more.href = DBHelper.urlForRestaurant(restaurant);
   li.append(more)
 
@@ -221,7 +280,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 
-} 
+}
 /* addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     // Add marker to the map

@@ -11,9 +11,70 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
-registerServiceworker = () =>{
-  if(!navigator.serviceWorker) return;
-  navigator.serviceWorker.register(PREFIX_PATH+'/sw.js',{scope: PREFIX_PATH+'/'});
+registerServiceworker = () => {
+  if (!navigator.serviceWorker) return;
+  navigator.serviceWorker.register(PREFIX_PATH + '/sw.js', { scope: PREFIX_PATH + '/' })
+    .then(serviceWorkerRegistration => {
+      //check to see if page was loaded by sw. if it wasnt, no need to check for sw states
+      if (!navigator.serviceWorker.controller) {
+        return;
+      }
+
+      //a sw is in waiting state
+      if (serviceWorkerRegistration.waiting) {
+        //notify the user
+        notifyUI();
+        return
+      }
+
+      // a sw is in insalling state
+      if (serviceWorkerRegistration.installing) {
+        monitorServiceWorkerState(serviceWorkerRegistration.installing);
+        return;
+      }
+
+      //if future update found
+      serviceWorkerRegistration.addEventListener('updatefound', ()=>{
+        monitorServiceWorkerState(serviceWorkerRegistration.installing);
+      })
+
+      //add event to check if new sw has taken over current page
+      navigator.serviceWorker.addEventListener('controllerchange',() =>{
+        window.location.reload();
+        console.log('Page reloaded');
+      })
+    });
+}
+
+notifyUI = (serviceWorker) => {
+  console.log('New update found in waiting');
+  showSnackBar();
+  var updateLink = document.getElementById("update_btn");
+  updateLink.onclick = () =>{
+    console.log("Requesting update");
+    serviceWorker.postMessage({action:'skipWaitingStage'});
+  }
+
+}
+
+monitorServiceWorkerState = (serviceWorker) => {
+  //check for state changes in the sw. If it changes to installed, nofify the UI
+  serviceWorker.addEventListener('statechange', () => {
+    if (serviceWorker.state == 'installed') {
+        notifyUI(serviceWorker)
+    }
+  })
+}
+
+dismissSnackBar = () =>{
+  var snackbar = document.getElementById("snackbar");
+  snackbar.className = "";
+}
+
+showSnackBar = () =>{
+  var snackbar = document.getElementById("snackbar");
+  console.log("Show snack");
+  snackbar.className = "show";
 }
 
 /**

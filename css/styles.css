@@ -377,6 +377,21 @@ a.skip-to-main:focus, a.skip-to-main:active{
   left: auto;
 }
 
+#snackbar {
+  color: white;
+  position: fixed;
+  min-width: 200px;
+  margin-left: -100px;/*To compensate for offset casued by left positioning*/
+  left: 50%;
+  bottom: 48px;
+  background-color: #252831;
+  padding: 16px;
+  visibility: hidden;
+}
+#snackbar.show {
+  visibility: visible;
+}
+
 /*Styling for medium*/
 @media screen and (min-width: 421px) and (max-width: 899px){
   #restaurants-list{
