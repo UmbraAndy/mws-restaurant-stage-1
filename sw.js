@@ -1,6 +1,6 @@
 const localCacheName = 'restaurant-v4';
 //make it empty for local testing for github pages use /mws-restaurant-stage-1
-const PREFIX_PATH ="/mws-restaurant-stage-1";
+const PREFIX_PATH =".";
 self.addEventListener('install', installEvent =>{
     console.log('Starting install');
     const urlsRequestsToCache = [

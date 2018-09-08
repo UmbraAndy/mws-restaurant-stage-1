@@ -4,7 +4,7 @@ let restaurants,
 var newMap
 var markers = []
 //make it empty for local testing for github pages use /mws-restaurant-stage-1
-const PREFIX_PATH = "/mws-restaurant-stage-1";
+const PREFIX_PATH = ".";//"/mws-restaurant-stage-1";
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
@@ -163,7 +163,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 //splice density reation into image url
 function spliceDensityIntoImageUrl(url,density)
 {
-  url = url.replace(".",density+".");
+  url = url.replace(".jpg",density+".jpg");
   return url;
 }
 
