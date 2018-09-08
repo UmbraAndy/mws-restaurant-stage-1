@@ -98,6 +98,7 @@ function spliceDensityIntoImageUrl(url,density)
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
+  name.tabIndex = 0;
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
@@ -110,6 +111,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   //set alt tag for image
   image.alt = "Image of "+ restaurant.name  ;
+  image.tabIndex = 0;
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -127,6 +129,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
+  
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
@@ -139,6 +142,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
     row.appendChild(time);
 
     hours.appendChild(row);
+    hours.tabIndex =0;
   }
 }
 
@@ -184,6 +188,7 @@ createReviewHTML = (review) => {
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
+  li.tabIndex =0;
 
   return li;
 }
