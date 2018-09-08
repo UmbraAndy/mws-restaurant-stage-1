@@ -1,6 +1,6 @@
-const localCacheName = 'restaurant-v1';
+const localCacheName = 'restaurant-v3';
 //make it empty for local testing for github pages use /mws-restaurant-stage-1
-const PREFIX_PATH = "/mws-restaurant-stage-1";
+const PREFIX_PATH =""; "/mws-restaurant-stage-1";
 self.addEventListener('install', installEvent =>{
     console.log('Starting install');
     const urlsRequestsToCache = [
@@ -33,6 +33,17 @@ self.addEventListener('install', installEvent =>{
 
 self.addEventListener('activate',activateEvent =>{
     console.log('SW activated');
+    //loop through caches and delete old ones
+    caches.keys()
+    .then(cacheKeys =>{
+        cacheKeys.map(cacheName =>{
+            console.log('Cache name : '+cacheName );
+            if(cacheName != localCacheName){
+                caches.delete(cacheName);
+            }
+        })
+
+    })
 });
 
 
@@ -40,9 +51,17 @@ self.addEventListener('fetch',fetchEvent=>{
     const request = fetchEvent.request;
     fetchEvent.respondWith(
         caches.match(request,{ignoreSearch:true})
-        .then(response =>{
-            if(response) return response;
-            return fetch(request);
+        .then(cacheResponse =>{
+            if(cacheResponse) return cacheResponse;
+            return fetch(request)
+            .then(serverResponse =>{
+                //catch request/response from server fetch
+                return caches.open(localCacheName)
+                .then(cache =>{
+                    cache.put(request,serverResponse.clone());
+                    return serverResponse;
+                })
+            });
         })
     )
 })
