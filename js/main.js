@@ -4,7 +4,7 @@ let restaurants,
 var newMap
 var markers = []
 //make it empty for local testing for github pages use /mws-restaurant-stage-1
-const PREFIX_PATH = "";//"/mws-restaurant-stage-1";
+const PREFIX_PATH = "/mws-restaurant-stage-1";
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
