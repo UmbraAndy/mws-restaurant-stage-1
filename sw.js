@@ -1,8 +1,10 @@
-const localCacheName = 'restaurant-v10';
+const localCacheName = 'restaurant-v22';
 const PREFIX_PATH =".";
 self.addEventListener('install', installEvent =>{
     console.log('Starting install');
     const urlsRequestsToCache = [
+        PREFIX_PATH+'/img/icon_512.png',
+        PREFIX_PATH+'/img/icon_192.png',
         PREFIX_PATH+'/',
         PREFIX_PATH+'/index.html',
         PREFIX_PATH+'/restaurant.html',
@@ -10,7 +12,6 @@ self.addEventListener('install', installEvent =>{
         PREFIX_PATH+'/js/dbhelper.js',
         PREFIX_PATH+'/js/main.js',
         PREFIX_PATH+'/js/restaurant_info.js',
-        PREFIX_PATH+'/data/restaurants.json',
         'https://unpkg.com/leaflet@1.3.1/dist/leaflet.css',
         'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js'
     ]

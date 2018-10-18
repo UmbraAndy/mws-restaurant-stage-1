@@ -42,7 +42,7 @@ class DBHelper {
       let readAllTransaction = db.transaction(restaurant_store,'readonly');
       let restaurantStore = readAllTransaction.objectStore(restaurant_store);
       restaurantStore.getAll().then(restaurants => {
-        console.log("DBREST:" + restaurants.length);
+        //console.log("DBREST:" + restaurants.length);
         if (restaurants != null  &&  (restaurants.length > 0)) {// data in db.
           callback(null, restaurants);
         }
@@ -195,8 +195,8 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-
-    return (`img/${restaurant.photograph}.jpg`);// removed starting / to cater for github pages
+    let phoroUrl =  restaurant.photograph ? `${restaurant.photograph}.jpg` : 'icon_512.png'
+    return (`img/${phoroUrl}`);// removed starting / to cater for github pages
   }
 
   /**
