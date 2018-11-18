@@ -246,8 +246,14 @@ createRestaurantHTML = (restaurant) => {
   li.append(image);
 
   const name = document.createElement('h2');
-  name.innerHTML = restaurant.name;
+  //add favourite to end of  name
+  const favouriteChk = document.createElement('input');
+  favouriteChk.setAttribute('type','checkbox')
+  favouriteChk.setAttribute('data-id',restaurant.id)
+  name.innerHTML = restaurant.name ;
+  name.append(favouriteChk);
   li.append(name);
+  
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
