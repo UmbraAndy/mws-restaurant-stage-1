@@ -187,6 +187,8 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
+
+  
   // fill reviews
   fillReviewsHTML();
 }
@@ -221,6 +223,43 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
+  //add form for review
+  const reviewForm  = document.createElement('form');
+  const ratingSelectDiv = document.createElement('div');
+  ratingSelectDiv.setAttribute('id','rating-select-div')
+  const ratingTexttDiv = document.createElement('div');
+  reviewForm.setAttribute('id','review_form')
+  const ratingInput= document.createElement('select');
+  for(var i =1; i< 6 ;i++ ){
+    const option = document.createElement('option');
+    option.value = i;
+    option.innerText = i;
+    ratingInput.append(option);
+  }
+  ratingInput.setAttribute('value','1');
+  ratingInput.setAttribute('id','rating')
+  const ratingLabel =  document.createElement('label');
+  ratingLabel.classList ='review-labels';
+  ratingLabel.setAttribute('for',ratingInput.getAttribute('id'));
+  ratingLabel.innerText = 'Rate this restaurant';
+  ratingSelectDiv.append(ratingLabel);
+  ratingSelectDiv.append(ratingInput);
+  const ratingText = document.createElement('textarea');
+  ratingText.setAttribute('id','review_text');
+  ratingText.setAttribute('rows','4');
+  const reviewTextLabel = document.createElement('label')
+  reviewTextLabel.classList ='review-labels';
+  reviewTextLabel.setAttribute('for','review_text');
+  reviewTextLabel.innerText = 'Comment'
+  ratingTexttDiv.append(reviewTextLabel);
+  ratingTexttDiv.append(ratingText);
+  const postReviewButton = document.createElement('button');
+  postReviewButton.setAttribute('id','post_button');
+  postReviewButton.innerText = 'Post review';
+  reviewForm.append(ratingSelectDiv);
+  reviewForm.append(ratingTexttDiv);
+  reviewForm.append(postReviewButton);
+  container.append(reviewForm);
 
   if (!reviews) {
     const noReviews = document.createElement('p');

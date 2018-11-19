@@ -392,6 +392,24 @@ a.skip-to-main:focus, a.skip-to-main:active{
   visibility: visible;
 }
 
+/*Styling for review from */
+.review-labels{
+  display: block;
+  margin-bottom: 5px;
+}
+#rating,#review_text {
+  display: block;
+  width: 100%;
+}
+
+#review_form div{
+  margin-bottom: 20px;
+}
+
+#review_text{
+  display: block;
+}
+
 /*Styling for medium*/
 @media screen and (min-width: 421px) and (max-width: 899px){
   #restaurants-list{
