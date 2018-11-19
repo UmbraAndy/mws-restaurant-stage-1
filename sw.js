@@ -1,4 +1,4 @@
-const localCacheName = 'restaurant-v25';
+const localCacheName = 'restaurant-v26';
 const PREFIX_PATH =".";
 self.addEventListener('install', installEvent =>{
     console.log('Starting install');

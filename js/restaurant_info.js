@@ -159,6 +159,12 @@ function spliceDensityIntoImageUrl(url,density)
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
+  //add favourite to end of  name
+  const favouriteChk = document.createElement('input');
+  favouriteChk.setAttribute('type','checkbox')
+  favouriteChk.setAttribute('data-id',restaurant.id)
+  name.innerHTML = restaurant.name ;
+  name.append(favouriteChk);  
   name.tabIndex = 0;
 
   const address = document.getElementById('restaurant-address');
