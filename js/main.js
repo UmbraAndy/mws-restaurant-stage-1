@@ -39,25 +39,37 @@ registerServiceworker = () => {
       }
 
       //if future update found
-      serviceWorkerRegistration.addEventListener('updatefound', ()=>{
+      serviceWorkerRegistration.addEventListener('updatefound', () => {
         monitorServiceWorkerState(serviceWorkerRegistration.installing);
       })
 
       //add event to check if new sw has taken over current page
-      navigator.serviceWorker.addEventListener('controllerchange',() =>{
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
         window.location.reload();
         console.log('Page reloaded');
       })
     });
+  // //register for favourite sync
+  // navigator.serviceWorker.ready.then((regitration) => {
+  //   console.log("fav sync registration");
+  //   return regitration.sync.register('favouriteSync')
+  // })
+
+  // //register for review sync
+  // navigator.serviceWorker.ready.then((regitration) => {
+  //   console.log("review sync registration");
+  //   return regitration.sync.register('reviewSync')
+  // })
+
 }
 
 notifyUI = (serviceWorker) => {
   console.log('New update found in waiting');
   showSnackBar();
   var updateLink = document.getElementById("update_btn");
-  updateLink.onclick = () =>{
+  updateLink.onclick = () => {
     console.log("Requesting update");
-    serviceWorker.postMessage({action:'skipWaitingStage'});
+    serviceWorker.postMessage({ action: 'skipWaitingStage' });
   }
 
 }
@@ -66,17 +78,17 @@ monitorServiceWorkerState = (serviceWorker) => {
   //check for state changes in the sw. If it changes to installed, nofify the UI
   serviceWorker.addEventListener('statechange', () => {
     if (serviceWorker.state == 'installed') {
-        notifyUI(serviceWorker)
+      notifyUI(serviceWorker)
     }
   })
 }
 
-dismissSnackBar = () =>{
+dismissSnackBar = () => {
   var snackbar = document.getElementById("snackbar");
   snackbar.className = "";
 }
 
-showSnackBar = () =>{
+showSnackBar = () => {
   var snackbar = document.getElementById("snackbar");
   console.log("Show snack");
   snackbar.className = "show";
@@ -248,12 +260,21 @@ createRestaurantHTML = (restaurant) => {
   const name = document.createElement('h2');
   //add favourite to end of  name
   const favouriteChk = document.createElement('input');
-  favouriteChk.setAttribute('type','checkbox')
-  favouriteChk.setAttribute('data-id',restaurant.id)
-  name.innerHTML = restaurant.name ;
+  favouriteChk.setAttribute('type', 'checkbox')
+  favouriteChk.setAttribute('data-id', restaurant.id)
+  favouriteChk.addEventListener('click', (event) => {
+    const checkBox = event.target;
+    const restaurantId = checkBox.getAttribute('data-id');
+    markFavourite(restaurantId, checkBox.checked).then(() => {
+      doFavouriteBackgroundSync();
+    });
+  })
+  //marke as checked if is favourite
+  favouriteChk.checked = (restaurant.is_favorite == 'true' || restaurant.is_favorite) ? true : false;
+  name.innerHTML = restaurant.name;
   name.append(favouriteChk);
   li.append(name);
-  
+
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
@@ -272,6 +293,18 @@ createRestaurantHTML = (restaurant) => {
   return li
 }
 
+
+markFavourite = (restaurantId, markBool) => {
+  return DBHelper.markAsFavourite(restaurantId, markBool);
+}
+
+doFavouriteBackgroundSync=() =>{
+  if('SyncManager' in window){
+    navigator.serviceWorker.ready.then(function(swRegistration) {
+      swRegistration.sync.register('favouriteSync');
+    })
+  }
+}
 /**
  * Add markers for current restaurants to the map.
  */

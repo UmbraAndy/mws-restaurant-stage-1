@@ -397,7 +397,7 @@ a.skip-to-main:focus, a.skip-to-main:active{
   display: block;
   margin-bottom: 5px;
 }
-#rating,#review_text {
+#rating,#review_text,#rating_name {
   display: block;
   width: 100%;
 }

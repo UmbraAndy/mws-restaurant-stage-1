@@ -1,4 +1,4 @@
-const localCacheName = 'restaurant-v40';
+const localCacheName = 'restaurant-v60';
 const PREFIX_PATH =".";
 self.addEventListener('install', installEvent =>{
     console.log('Starting install');
@@ -58,6 +58,8 @@ self.addEventListener('fetch',fetchEvent=>{
                 //catch request/response from server fetch
                 return caches.open(localCacheName)
                 .then(cache =>{
+                    const method = request.method;
+                    if(method == "POST" || method =="PUT") return serverResponse;//POST and PUT should not be cached
                     cache.put(request,serverResponse.clone());
                     return serverResponse;
                 })
@@ -65,6 +67,17 @@ self.addEventListener('fetch',fetchEvent=>{
         })
     )
 })
+
+self.addEventListener('sync', function(event) {
+    if (event.tag == 'favouriteSync') {
+        console.log("FAVSYNC");
+      //event.waitUntil(sendFavourite());
+    }
+    else if(event.tag == 'reviewSync'){
+        console.log("REVSYNC");
+        //event.waitUntil(sendReview());
+    }
+  });
 
 //handle message event
 self.addEventListener('message', function (event) {

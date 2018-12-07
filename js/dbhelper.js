@@ -5,6 +5,9 @@
 //db 
 this.dbPromised = null;
 this.restaurant_store = 'restaurant-store';
+this.review_store = 'review_store';
+this.favourite_store = 'favourite_store';
+this.restaurant_key =  'restaurantId';
 class DBHelper {
 
 
@@ -21,23 +24,26 @@ class DBHelper {
   }
 
 
+
+
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
     //setup database if it does nort exist;
     if (this.dbPromised == null) {
-      this.dbPromised = idb.open('restaurant-db', 1, upgradeDB => {
+      this.dbPromised = idb.open('restaurant-db', 2, upgradeDB => {
         switch (upgradeDB.oldVersion) {
           case 0:// this is the very first verison
             upgradeDB.createObjectStore(restaurant_store, { keyPath: 'id' });
+          case 1:// cater for favourite and review
+          upgradeDB.createObjectStore(review_store, { keyPath: 'restaurant_id' });
+          upgradeDB.createObjectStore(favourite_store, { keyPath: restaurant_key });
         }
       })
     }
 
-
     //first fetch data from db. if no data from db, then fetch from server;
-
     let tx = this.dbPromised.then(db => {
       let readAllTransaction = db.transaction(restaurant_store,'readonly');
       let restaurantStore = readAllTransaction.objectStore(restaurant_store);
@@ -184,6 +190,54 @@ class DBHelper {
     });
   }
 
+  static markAsFavourite(restaurantId,markedBool){
+    //mark in db first
+    return this.dbPromised.then(db => {
+      let tx = db.transaction(restaurant_store,'readwrite');
+      let store = tx.objectStore(restaurant_store);
+      return this.addToPendingFavoutites(restaurantId,markedBool)
+    })
+    // return fetch(DBHelper.DATABASE_URL+restaurantId+"/?is_favorite="+markedBool,{
+    //   method:"PUT",
+    //   mode:"cors",
+    //   headers:{
+    //       "Content-Type": "application/json; charset=utf-8"
+    //   }
+    // })
+  }
+
+
+  static  getPendingFavourites(params) {
+      
+  }
+
+  static  addToPendingFavoutites(restaurantId,markedBool) {
+    return this.dbPromised.then(db => {
+      let tx = db.transaction([restaurant_store,favourite_store],'readwrite');
+      let restaurantStore = tx.objectStore(restaurant_store);
+      let favouriteStore = tx.objectStore(favourite_store);
+      return restaurantStore.get(parseInt(restaurantId))
+                  .then((restaurantObject)=>{
+                    //console.log("INTRX FAV "+ markedBool);
+                    restaurantObject.is_favorite = (markedBool == 'true' || markedBool) ? true : false;
+                    //console.log("AFTERCHANGE " + restaurantObject.is_favorite );
+                    restaurantStore.put(restaurantObject);  
+                    const favourite = {'restaurantId': parseInt(restaurantId), 'value':markedBool}
+                    favouriteStore.put(favourite);
+                    return tx.complete;                  
+                  })
+    })    
+  }
+
+  static addToPendingReviews(review){
+    return this.dbPromised.then(db=>{
+      let tx = db.transaction(review_store,'readwrite');
+      let reviewStore =  tx.objectStore(review_store);
+      reviewStore.put(review);
+      return tx.complete;
+    })
+  }
+
   /**
    * Restaurant page URL.
    */
@@ -213,6 +267,8 @@ class DBHelper {
     marker.addTo(newMap);
     return marker;
   }
+
+
   /* static mapMarkerForRestaurant(restaurant, map) {
     const marker = new google.maps.Marker({
       position: restaurant.latlng,

@@ -1,11 +1,11 @@
 let restaurant;
 var newMap;
 //make it empty for local testing for github pages use /mws-restaurant-stage-1
-const PREFIX_PATH ="."; "/mws-restaurant-stage-1";
+const PREFIX_PATH = "."; "/mws-restaurant-stage-1";
 /**
  * Initialize map as soon as the page is loaded.
  */
-document.addEventListener('DOMContentLoaded', (event) => {  
+document.addEventListener('DOMContentLoaded', (event) => {
   initMap();
   registerServiceworker();
 });
@@ -34,12 +34,12 @@ registerServiceworker = () => {
       }
 
       //if future update found
-      serviceWorkerRegistration.addEventListener('updatefound', ()=>{
+      serviceWorkerRegistration.addEventListener('updatefound', () => {
         monitorServiceWorkerState(serviceWorkerRegistration.installing);
       })
 
       //add event to check if new sw has taken over current page
-      navigator.serviceWorker.addEventListener('controllerchange',() =>{
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
         window.location.reload();
         console.log('Page reloaded');
       })
@@ -50,9 +50,9 @@ notifyUI = (serviceWorker) => {
   console.log('New update found in waiting');
   showSnackBar();
   var updateLink = document.getElementById("update_btn");
-  updateLink.onclick = () =>{
+  updateLink.onclick = () => {
     console.log("Requesting update");
-    serviceWorker.postMessage({action:'skipWaitingStage'});
+    serviceWorker.postMessage({ action: 'skipWaitingStage' });
   }
 
 }
@@ -61,17 +61,17 @@ monitorServiceWorkerState = (serviceWorker) => {
   //check for state changes in the sw. If it changes to installed, nofify the UI
   serviceWorker.addEventListener('statechange', () => {
     if (serviceWorker.state == 'installed') {
-        notifyUI(serviceWorker)
+      notifyUI(serviceWorker)
     }
   })
 }
 
-dismissSnackBar = () =>{
+dismissSnackBar = () => {
   var snackbar = document.getElementById("snackbar");
   snackbar.className = "";
 }
 
-showSnackBar = () =>{
+showSnackBar = () => {
   var snackbar = document.getElementById("snackbar");
   console.log("Show snack");
   snackbar.className = "show";
@@ -84,7 +84,7 @@ initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
-    } else {      
+    } else {
       self.newMap = L.map('map', {
         center: [restaurant.latlng.lat, restaurant.latlng.lng],
         zoom: 16,
@@ -96,14 +96,14 @@ initMap = () => {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
           '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
           'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox.streets'    
+        id: 'mapbox.streets'
       }).addTo(newMap);
       fillBreadcrumb();
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.newMap);
     }
   });
-}  
- 
+}
+
 /* window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
@@ -147,9 +147,8 @@ fetchRestaurantFromURL = (callback) => {
 
 
 //splice density reation into image url
-function spliceDensityIntoImageUrl(url,density)
-{
-  url = url.replace(".",density+".");
+function spliceDensityIntoImageUrl(url, density) {
+  url = url.replace(".", density + ".");
   return url;
 }
 
@@ -161,10 +160,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   name.innerHTML = restaurant.name;
   //add favourite to end of  name
   const favouriteChk = document.createElement('input');
-  favouriteChk.setAttribute('type','checkbox')
-  favouriteChk.setAttribute('data-id',restaurant.id)
-  name.innerHTML = restaurant.name ;
-  name.append(favouriteChk);  
+  favouriteChk.setAttribute('type', 'checkbox')
+  favouriteChk.setAttribute('data-id', restaurant.id)
+  name.innerHTML = restaurant.name;
+  name.append(favouriteChk);
   name.tabIndex = 0;
 
   const address = document.getElementById('restaurant-address');
@@ -173,11 +172,11 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img';
   let baseSrc = DBHelper.imageUrlForRestaurant(restaurant);
-  image.src = spliceDensityIntoImageUrl(baseSrc,"-1x");
-  image.srcset = spliceDensityIntoImageUrl(baseSrc ,"-1x") +" 1x, "+ spliceDensityIntoImageUrl(baseSrc,"-2x") +" 2x";
+  image.src = spliceDensityIntoImageUrl(baseSrc, "-1x");
+  image.srcset = spliceDensityIntoImageUrl(baseSrc, "-1x") + " 1x, " + spliceDensityIntoImageUrl(baseSrc, "-2x") + " 2x";
 
   //set alt tag for image
-  image.alt = "Image of "+ restaurant.name  ;
+  image.alt = "Image of " + restaurant.name;
   image.tabIndex = 0;
 
   const cuisine = document.getElementById('restaurant-cuisine');
@@ -188,7 +187,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
 
-  
+
   // fill reviews
   fillReviewsHTML();
 }
@@ -198,7 +197,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
-  
+
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
@@ -211,7 +210,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
     row.appendChild(time);
 
     hours.appendChild(row);
-    hours.tabIndex =0;
+    hours.tabIndex = 0;
   }
 }
 
@@ -224,38 +223,67 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   title.innerHTML = 'Reviews';
   container.appendChild(title);
   //add form for review
-  const reviewForm  = document.createElement('form');
+  const reviewForm = document.createElement('form');
+  const nameDiv = document.createElement('div');
+  nameDiv.setAttribute('id', 'name-div');
   const ratingSelectDiv = document.createElement('div');
-  ratingSelectDiv.setAttribute('id','rating-select-div')
+  ratingSelectDiv.setAttribute('id', 'rating-select-div')
   const ratingTexttDiv = document.createElement('div');
-  reviewForm.setAttribute('id','review_form')
-  const ratingInput= document.createElement('select');
-  for(var i =1; i< 6 ;i++ ){
+  reviewForm.setAttribute('id', 'review_form');
+  const nameInput = document.createElement('input');
+  nameInput.setAttribute('id', 'rating_name');
+  nameInput.setAttribute('type','text');
+  const ratingInput = document.createElement('select');
+  for (var i = 1; i < 6; i++) {
     const option = document.createElement('option');
     option.value = i;
     option.innerText = i;
     ratingInput.append(option);
   }
-  ratingInput.setAttribute('value','1');
-  ratingInput.setAttribute('id','rating')
-  const ratingLabel =  document.createElement('label');
-  ratingLabel.classList ='review-labels';
-  ratingLabel.setAttribute('for',ratingInput.getAttribute('id'));
+  const nameLabel = document.createElement('label');
+  nameLabel.classList = 'review-labels';
+  nameLabel.setAttribute('for', nameInput.getAttribute('id'));
+  nameLabel.innerText = 'Name';  
+  nameLabel.classList = 'review-labels';
+  ratingInput.setAttribute('value', '1');
+  ratingInput.setAttribute('id', 'rating')
+  const ratingLabel = document.createElement('label');
+  ratingLabel.classList = 'review-labels';
+  ratingLabel.setAttribute('for', ratingInput.getAttribute('id'));
   ratingLabel.innerText = 'Rate this restaurant';
+  nameDiv.append(nameLabel);
+  nameDiv.append(nameInput);
   ratingSelectDiv.append(ratingLabel);
   ratingSelectDiv.append(ratingInput);
   const ratingText = document.createElement('textarea');
-  ratingText.setAttribute('id','review_text');
-  ratingText.setAttribute('rows','4');
+  ratingText.setAttribute('id', 'review_text');
+  ratingText.setAttribute('rows', '4');
   const reviewTextLabel = document.createElement('label')
-  reviewTextLabel.classList ='review-labels';
-  reviewTextLabel.setAttribute('for','review_text');
+  reviewTextLabel.classList = 'review-labels';
+  reviewTextLabel.setAttribute('for', 'review_text');
   reviewTextLabel.innerText = 'Comment'
   ratingTexttDiv.append(reviewTextLabel);
   ratingTexttDiv.append(ratingText);
   const postReviewButton = document.createElement('button');
-  postReviewButton.setAttribute('id','post_button');
+  postReviewButton.setAttribute('id', 'post_button');
   postReviewButton.innerText = 'Post review';
+  postReviewButton.addEventListener('click', event => {
+    event.preventDefault();
+    const date = Date.now();
+    const review = {
+      'restaurant_id': self.restaurant.id,
+      'name': nameInput.value,
+      'createdAt': date,
+      'updatedAt': date,
+      'rating': ratingInput.value,
+      'comments':ratingText.value
+    };
+    console.log(review);
+    DBHelper.addToPendingReviews(review).then(() =>{
+      doReviewgroundSync();
+    })
+  })
+  reviewForm.append(nameDiv);
   reviewForm.append(ratingSelectDiv);
   reviewForm.append(ratingTexttDiv);
   reviewForm.append(postReviewButton);
@@ -272,6 +300,15 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
+}
+
+
+doReviewgroundSync=() =>{
+  if('SyncManager' in window){
+    navigator.serviceWorker.ready.then(function(swRegistration) {
+      swRegistration.sync.register('REVSYNC');
+    })
+  }
 }
 
 /**
@@ -294,7 +331,7 @@ createReviewHTML = (review) => {
   const comments = document.createElement('p');
   comments.innerHTML = review.comments;
   li.appendChild(comments);
-  li.tabIndex =0;
+  li.tabIndex = 0;
 
   return li;
 }
@@ -302,7 +339,7 @@ createReviewHTML = (review) => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = (restaurant=self.restaurant) => {
+fillBreadcrumb = (restaurant = self.restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
