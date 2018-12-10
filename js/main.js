@@ -266,7 +266,7 @@ createRestaurantHTML = (restaurant) => {
     const checkBox = event.target;
     const restaurantId = checkBox.getAttribute('data-id');
     markFavourite(restaurantId, checkBox.checked).then(() => {
-      doFavouriteBackgroundSync();
+      doFavouriteBackgroundSync(restaurantId);
     });
   })
   //marke as checked if is favourite
@@ -298,10 +298,10 @@ markFavourite = (restaurantId, markBool) => {
   return DBHelper.markAsFavourite(restaurantId, markBool);
 }
 
-doFavouriteBackgroundSync=() =>{
-  if('SyncManager' in window){
-    navigator.serviceWorker.ready.then(function(swRegistration) {
-      swRegistration.sync.register('favouriteSync');
+doFavouriteBackgroundSync = (restaurantId) => {
+  if ('SyncManager' in window) {
+    navigator.serviceWorker.ready.then(function (swRegistration) {
+      swRegistration.sync.register('favouriteSync-' + restaurantId);
     })
   }
 }

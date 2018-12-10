@@ -158,12 +158,6 @@ function spliceDensityIntoImageUrl(url, density) {
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
-  //add favourite to end of  name
-  const favouriteChk = document.createElement('input');
-  favouriteChk.setAttribute('type', 'checkbox')
-  favouriteChk.setAttribute('data-id', restaurant.id)
-  name.innerHTML = restaurant.name;
-  name.append(favouriteChk);
   name.tabIndex = 0;
 
   const address = document.getElementById('restaurant-address');
@@ -269,18 +263,17 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   postReviewButton.innerText = 'Post review';
   postReviewButton.addEventListener('click', event => {
     event.preventDefault();
+    Notification.requestPermission();
     const date = Date.now();
     const review = {
+      'syncId':date,
       'restaurant_id': self.restaurant.id,
       'name': nameInput.value,
-      'createdAt': date,
-      'updatedAt': date,
-      'rating': ratingInput.value,
+      'rating': parseInt(ratingInput.value),
       'comments':ratingText.value
     };
-    console.log(review);
     DBHelper.addToPendingReviews(review).then(() =>{
-      doReviewgroundSync();
+      doReviewgroundSync(date);
     })
   })
   reviewForm.append(nameDiv);
@@ -303,10 +296,10 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 }
 
 
-doReviewgroundSync=() =>{
+doReviewgroundSync=(reviewId) =>{
   if('SyncManager' in window){
     navigator.serviceWorker.ready.then(function(swRegistration) {
-      swRegistration.sync.register('REVSYNC');
+      swRegistration.sync.register('reviewSync-'+reviewId);
     })
   }
 }

@@ -1,3 +1,4 @@
+
 /**
  * Common database helper functions.
  */
@@ -7,7 +8,7 @@ this.dbPromised = null;
 this.restaurant_store = 'restaurant-store';
 this.review_store = 'review_store';
 this.favourite_store = 'favourite_store';
-this.restaurant_key =  'restaurantId';
+this.restaurant_key = 'restaurantId';
 class DBHelper {
 
 
@@ -24,32 +25,37 @@ class DBHelper {
   }
 
 
-
+  static initDB() {
+    if (this.dbPromised == null) {
+      this.dbPromised = idb.open('restaurant-db', 4, upgradeDB => {
+        switch (upgradeDB.oldVersion) {
+          case 0:// this is the very first verison
+            upgradeDB.createObjectStore(restaurant_store, { keyPath: 'id' });
+          case 1:// cater for favourite and review
+            upgradeDB.createObjectStore(review_store, { keyPath: 'restaurant_id' });
+            upgradeDB.createObjectStore(favourite_store, { keyPath: restaurant_key });
+          case 4://delete old review store and recreate it
+            upgradeDB.deleteObjectStore(review_store);
+            upgradeDB.createObjectStore(review_store, { keyPath: 'syncId' });
+        }
+      })
+    }
+  }
 
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
     //setup database if it does nort exist;
-    if (this.dbPromised == null) {
-      this.dbPromised = idb.open('restaurant-db', 2, upgradeDB => {
-        switch (upgradeDB.oldVersion) {
-          case 0:// this is the very first verison
-            upgradeDB.createObjectStore(restaurant_store, { keyPath: 'id' });
-          case 1:// cater for favourite and review
-          upgradeDB.createObjectStore(review_store, { keyPath: 'restaurant_id' });
-          upgradeDB.createObjectStore(favourite_store, { keyPath: restaurant_key });
-        }
-      })
-    }
+    DBHelper.initDB();
 
     //first fetch data from db. if no data from db, then fetch from server;
     let tx = this.dbPromised.then(db => {
-      let readAllTransaction = db.transaction(restaurant_store,'readonly');
+      let readAllTransaction = db.transaction(restaurant_store, 'readonly');
       let restaurantStore = readAllTransaction.objectStore(restaurant_store);
       restaurantStore.getAll().then(restaurants => {
         //console.log("DBREST:" + restaurants.length);
-        if (restaurants != null  &&  (restaurants.length > 0)) {// data in db.
+        if (restaurants != null && (restaurants.length > 0)) {// data in db.
           callback(null, restaurants);
         }
         else {// data not in db so fetch from server
@@ -61,8 +67,8 @@ class DBHelper {
               const restaurants = json;
               //save json to DB
               let writeAllTransaction = db.transaction(restaurant_store, 'readwrite');
-              let restaurantStoreForPut =  writeAllTransaction.objectStore(restaurant_store);
-              restaurants.forEach(restaurantItem =>{
+              let restaurantStoreForPut = writeAllTransaction.objectStore(restaurant_store);
+              restaurants.forEach(restaurantItem => {
                 restaurantStoreForPut.put(restaurantItem);
               });
               writeAllTransaction.complete;
@@ -190,52 +196,80 @@ class DBHelper {
     });
   }
 
-  static markAsFavourite(restaurantId,markedBool){
+  static markAsFavourite(restaurantId, markedBool) {
     //mark in db first
     return this.dbPromised.then(db => {
-      let tx = db.transaction(restaurant_store,'readwrite');
+      let tx = db.transaction(restaurant_store, 'readwrite');
       let store = tx.objectStore(restaurant_store);
-      return this.addToPendingFavoutites(restaurantId,markedBool)
+      return this.addToPendingFavoutites(restaurantId, markedBool)
     })
-    // return fetch(DBHelper.DATABASE_URL+restaurantId+"/?is_favorite="+markedBool,{
-    //   method:"PUT",
-    //   mode:"cors",
-    //   headers:{
-    //       "Content-Type": "application/json; charset=utf-8"
-    //   }
-    // })
   }
 
 
-  static  getPendingFavourites(params) {
-      
+  static getPendingFavourites(restaurantId) {
+    return DBHelper.dbPromised.then(db => {
+      let tx = db.transaction([favourite_store]);
+      let favouriteStore = tx.objectStore(favourite_store);
+      return favouriteStore.get(parseInt(restaurantId));
+    })
   }
 
-  static  addToPendingFavoutites(restaurantId,markedBool) {
-    return this.dbPromised.then(db => {
-      let tx = db.transaction([restaurant_store,favourite_store],'readwrite');
+  static addToPendingFavoutites(restaurantId, markedBool) {
+    return DBHelper.dbPromised.then(db => {
+      let tx = db.transaction([restaurant_store, favourite_store], 'readwrite');
       let restaurantStore = tx.objectStore(restaurant_store);
       let favouriteStore = tx.objectStore(favourite_store);
       return restaurantStore.get(parseInt(restaurantId))
-                  .then((restaurantObject)=>{
-                    //console.log("INTRX FAV "+ markedBool);
-                    restaurantObject.is_favorite = (markedBool == 'true' || markedBool) ? true : false;
-                    //console.log("AFTERCHANGE " + restaurantObject.is_favorite );
-                    restaurantStore.put(restaurantObject);  
-                    const favourite = {'restaurantId': parseInt(restaurantId), 'value':markedBool}
-                    favouriteStore.put(favourite);
-                    return tx.complete;                  
-                  })
-    })    
+        .then((restaurantObject) => {
+          //console.log("INTRX FAV "+ markedBool);
+          restaurantObject.is_favorite = (markedBool == 'true' || markedBool) ? true : false;
+          //console.log("AFTERCHANGE " + restaurantObject.is_favorite );
+          restaurantStore.put(restaurantObject);
+          const favourite = { 'restaurantId': parseInt(restaurantId), 'value': markedBool }
+          favouriteStore.put(favourite);
+          return tx.complete;
+        })
+    })
   }
 
-  static addToPendingReviews(review){
-    return this.dbPromised.then(db=>{
-      let tx = db.transaction(review_store,'readwrite');
-      let reviewStore =  tx.objectStore(review_store);
+  static deletPendingFavourite(restaurantId) {
+    console.log('DELETING FAV ' + restaurantId);
+    return this.dbPromised.then(db => {
+      let tx = db.transaction(favourite_store, 'readwrite');
+      let favouriteStore = tx.objectStore(favourite_store);
+      favouriteStore.delete(parseInt(restaurantId));
+      return tx.complete;
+    })
+
+  }
+
+  static getPendingReview(reviewId) {
+    return DBHelper.dbPromised.then(db => {
+      let tx = db.transaction([review_store]);
+      let reviewStore = tx.objectStore(review_store);
+      return reviewStore.get(parseInt(reviewId));
+    })
+  }
+
+
+  static addToPendingReviews(review) {
+    return this.dbPromised.then(db => {
+      let tx = db.transaction(review_store, 'readwrite');
+      let reviewStore = tx.objectStore(review_store);
       reviewStore.put(review);
       return tx.complete;
     })
+  }
+
+  static deletPendingReview(reviewId) {
+    console.log('DELETING REV' + reviewId);
+    return this.dbPromised.then(db => {
+      let tx = db.transaction(review_store, 'readwrite');
+      let reviewStore = tx.objectStore(review_store);
+      reviewStore.delete(parseInt(reviewId));
+      return tx.complete;
+    })
+
   }
 
   /**
@@ -249,7 +283,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    let phoroUrl =  restaurant.photograph ? `${restaurant.photograph}.jpg` : 'icon_512.png'
+    let phoroUrl = restaurant.photograph ? `${restaurant.photograph}.jpg` : 'icon_512.png'
     return (`img/${phoroUrl}`);// removed starting / to cater for github pages
   }
 
