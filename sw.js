@@ -1,6 +1,6 @@
 self.importScripts('./js/idb.js');
 self.importScripts('./js/dbhelper.js');
-const localCacheName = 'restaurant-v107';
+const localCacheName = 'restaurant-v120';
 const PREFIX_PATH = ".";
 
 self.addEventListener('install', installEvent => {

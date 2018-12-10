@@ -30,7 +30,7 @@ a img{
 }
 h1, h2, h3, h4, h5, h6 {
   font-family: Arial, Helvetica, sans-serif;
-  margin: 0 0 20px;
+  margin: 0 0 0px;
 }
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
 	display: block;
@@ -142,6 +142,34 @@ nav h1 a {
 .filter-options h2 {
   color: #000;
 }
+
+
+/*Star component
+
+code from https://www.cssscript.com/pure-css-star-rating-component/
+
+*/
+.star {
+  visibility:hidden;
+  font-size:30px;
+  cursor:pointer;
+}
+.star:before {
+ content: "\2606";
+ color:#A9A9A9;
+ visibility:visible;
+ position: relative;
+ top:-15px;
+ left:-5px; 
+}
+.star:checked:before {
+ content: "\2605";
+ color:#FFC107;
+ position: relative;
+ top:-15px;
+ left:-5px; 
+}
+
 .leaflet-control-attribution a{
   color: #006891 !important;
 }
@@ -408,6 +436,20 @@ a.skip-to-main:focus, a.skip-to-main:active{
 
 #review_text{
   display: block;
+}
+
+#review_button{
+  background-color: #a55500;
+  border-bottom: 3px solid #eee;
+  color: #fff;
+  display: inline-block;
+  font-size: 10pt;
+  margin: 15px 0 0;
+  cursor: pointer;
+  padding: 1.2em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
 /*Styling for medium*/

@@ -259,10 +259,11 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   ratingTexttDiv.append(reviewTextLabel);
   ratingTexttDiv.append(ratingText);
   const postReviewButton = document.createElement('button');
-  postReviewButton.setAttribute('id', 'post_button');
+  postReviewButton.setAttribute('id', 'review_button');
   postReviewButton.innerText = 'Post review';
   postReviewButton.addEventListener('click', event => {
     event.preventDefault();
+    postReviewButton.setAttribute('disabled',true);
     Notification.requestPermission();
     const date = Date.now();
     const review = {

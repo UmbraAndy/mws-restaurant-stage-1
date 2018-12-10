@@ -260,8 +260,15 @@ createRestaurantHTML = (restaurant) => {
   const name = document.createElement('h2');
   //add favourite to end of  name
   const favouriteChk = document.createElement('input');
-  favouriteChk.setAttribute('type', 'checkbox')
-  favouriteChk.setAttribute('data-id', restaurant.id)
+  const favouriteDiv = document.createElement('div');
+  const favouriteLabel= document.createElement('label');
+  favouriteLabel.innerText ='Favourite';
+  favouriteChk.setAttribute('type', 'checkbox');
+  favouriteChk.classList ='star';
+  favouriteChk.setAttribute('id',restaurant.name);
+  favouriteChk.setAttribute('data-id', restaurant.id);
+  favouriteLabel.setAttribute('for',restaurant.name);
+ 
   favouriteChk.addEventListener('click', (event) => {
     const checkBox = event.target;
     const restaurantId = checkBox.getAttribute('data-id');
@@ -272,8 +279,10 @@ createRestaurantHTML = (restaurant) => {
   //marke as checked if is favourite
   favouriteChk.checked = (restaurant.is_favorite == 'true' || restaurant.is_favorite) ? true : false;
   name.innerHTML = restaurant.name;
-  name.append(favouriteChk);
+  favouriteDiv.append(favouriteLabel);
+  favouriteDiv.append(favouriteChk)
   li.append(name);
+  li.append(favouriteDiv)
 
 
   const neighborhood = document.createElement('p');
