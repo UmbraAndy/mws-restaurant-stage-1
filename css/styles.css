@@ -39,6 +39,7 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   background-color: #f3f3f3;
   width: 100%;
   min-height: 100%;
+
 }
 #footer {
   background-color: #444;
@@ -361,10 +362,9 @@ code from https://www.cssscript.com/pure-css-star-rating-component/
 }
 
 #restaurant-hours {
-  width: 100%;
-  margin-left: 32px;
-  
-
+  width: calc(100% - 64px);
+  padding-left: 32px;
+  padding-right: 32px;
 }
 
 #restaurant-hours td{

@@ -205,6 +205,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img';
+  image.alt = `Image of ${restaurant.name}`;
   let baseSrc = DBHelper.imageUrlForRestaurant(restaurant);
   image.src = spliceDensityIntoImageUrl(baseSrc, "-1x");
   image.srcset = spliceDensityIntoImageUrl(baseSrc, "-1x") + " 1x, " + spliceDensityIntoImageUrl(baseSrc, "-2x") + " 2x";
