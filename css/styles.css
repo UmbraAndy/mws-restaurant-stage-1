@@ -350,7 +350,7 @@ code from https://www.cssscript.com/pure-css-star-rating-component/
     border: 2px solid #f3f3f3;
   display: block;
   list-style-type: none;
-  margin: 0 0 30px;
+  /* margin: 0 0 30px; */
   overflow: hidden;
   padding: 20px 20px;
   /* position: relative; */
@@ -428,6 +428,10 @@ a.skip-to-main:focus, a.skip-to-main:active{
 #rating,#review_text,#rating_name {
   display: block;
   width: 100%;
+}
+
+#review_form{
+  padding-bottom: 10px;
 }
 
 #review_form div{

@@ -112,6 +112,7 @@ initReviews = () => {
     }
     else {
       self.reviews = reviews;
+      fillReviewsHTML();
     }
   })
 }
@@ -222,7 +223,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 
   // fill reviews
-  fillReviewsHTML();
+  //fillReviewsHTML();
 }
 
 /**
@@ -250,8 +251,9 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews = self.reviews) => {
   const container = document.getElementById('reviews-container');
+
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
@@ -316,6 +318,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
       'rating': parseInt(ratingInput.value),
       'comments': ratingText.value
     };
+    self.reviews.push(review);
+    fillReviewsHTML();
     DBHelper.addToPendingReviews(review).then(() => {
       doReviewgroundSync(date);
     })
@@ -325,20 +329,35 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   reviewForm.append(ratingTexttDiv);
   reviewForm.append(postReviewButton);
   container.append(reviewForm);
+  refreshReviews();
+  // if (!reviews) {
+  //   const noReviews = document.createElement('p');
+  //   noReviews.innerHTML = 'No reviews yet!';
+  //   container.appendChild(noReviews);
+  //   return;
+  // }
+  // const ul = document.getElementById('reviews-list');
+  // reviews.forEach(review => {
+  //   ul.appendChild(createReviewHTML(review));
+  // });
+  // container.appendChild(ul);
+}
 
-  if (!reviews) {
+refreshReviews = () => {
+  const container = document.getElementById('reviews-container');
+  if (!self.reviews) {
     const noReviews = document.createElement('p');
     noReviews.innerHTML = 'No reviews yet!';
     container.appendChild(noReviews);
     return;
   }
   const ul = document.getElementById('reviews-list');
+  ul.innerHTML = '';
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
 }
-
 
 doReviewgroundSync = (reviewId) => {
   if ('SyncManager' in window) {
@@ -358,7 +377,7 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = review.date;
+  date.innerHTML = new Date(review.createdAt);
   li.appendChild(date);
 
   const rating = document.createElement('p');

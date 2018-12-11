@@ -1,6 +1,6 @@
 self.importScripts('./js/idb.js');
 self.importScripts('./js/dbhelper.js');
-const localCacheName = 'restaurant-v125';
+const localCacheName = 'restaurant-v140';
 const PREFIX_PATH = ".";
 
 self.addEventListener('install', installEvent => {
@@ -88,9 +88,13 @@ self.addEventListener('sync', function (event) {
     else if (syncTag.startsWith('reviewSync-')) {
         //obtain id of review
         const reviewId = syncTag.substr(syncTag.indexOf('-') + 1);
-        event.waitUntil(sendReview(reviewId).then((resultJson) => {
-            self.registration.showNotification("Review '" + resultJson.comments.substr(0, 10) + " .....'" + " synced to server for ");
-        })
+        event.waitUntil(sendReview(reviewId)
+            .then((resultJson) => {
+                return DBHelper.addReview(resultJson);
+            })
+            .then(() => {
+                self.registration.showNotification("Review synced to server for.");
+            })
         );
     }
 });
@@ -126,7 +130,6 @@ sendReview = (reviewId) => {
     DBHelper.initDB();
     return DBHelper.getPendingReview(reviewId).then(review => {
         const data = JSON.stringify(review);
-        console.log(data);
         return fetch('http://localhost:1337/reviews/', {
             method: "POST",
             headers: {
@@ -140,6 +143,10 @@ sendReview = (reviewId) => {
     })
 }
 
+addReviewToDB = (review) => {
+    DBHelper.initDB();
+    DBHelper.addReview(review);
+}
 
 deleteSyncedReview = (reviewId) => {
     DBHelper.initDB();

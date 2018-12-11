@@ -20,9 +20,7 @@ class DBHelper {
   static get DATABASE_URL() {
     const port = 8000 // Change this to your server port
     const serverPort = '1337';
-    //return `http://localhost:${port}/data/restaurants.json`;
-    //return './data/restaurants.json';
-    return `http://localhost:${serverPort}/restaurants/`;
+    return `http://localhost:${serverPort}`;
   }
 
 
@@ -64,7 +62,7 @@ class DBHelper {
         }
         else {// data not in db so fetch from server
           let xhr = new XMLHttpRequest();
-          xhr.open('GET', DBHelper.DATABASE_URL);
+          xhr.open('GET', DBHelper.DATABASE_URL+'/restaurants/');
           xhr.onload = () => {
             if (xhr.status === 200) { // Got a success response from server!
               const json = JSON.parse(xhr.responseText);
@@ -113,7 +111,7 @@ class DBHelper {
         }
         else {// data not in db so fetch from server
           let xhr = new XMLHttpRequest();
-          let url = `http://localhost:1337/reviews/?restaurant_id=${restaurantId}`;
+          let url = this.DATABASE_URL+`/reviews/?restaurant_id=${restaurantId}`;
           console.log(`URL ${url}`);
           xhr.open('GET', url);
           xhr.onload = () => {
@@ -255,12 +253,20 @@ class DBHelper {
   static markAsFavourite(restaurantId, markedBool) {
     //mark in db first
     return this.dbPromised.then(db => {
-      let tx = db.transaction(restaurant_store, 'readwrite');
-      let store = tx.objectStore(restaurant_store);
+      // let tx = db.transaction(restaurant_store, 'readwrite');
+      // let store = tx.objectStore(restaurant_store);
       return this.addToPendingFavoutites(restaurantId, markedBool)
     })
   }
 
+  static addReview(review){
+    return this.dbPromised.then(db => {
+      let tx = db.transaction(restaurant_review_store, 'readwrite');
+      let store = tx.objectStore(restaurant_review_store);
+      store.put(review);
+      return tx.complete;
+    })
+  }
 
   static getPendingFavourites(restaurantId) {
     return DBHelper.dbPromised.then(db => {
