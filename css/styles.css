@@ -372,7 +372,8 @@ code from https://www.cssscript.com/pure-css-star-rating-component/
 }
 
 #resturant-info{
-  padding-left: 32px;
+  padding-right: 16px;
+  padding-left: 16px;
 }
 .leaflet-control-zoom a{
   padding: 1.5em;
