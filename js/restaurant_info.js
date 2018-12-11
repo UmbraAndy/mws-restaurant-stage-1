@@ -7,6 +7,7 @@ const PREFIX_PATH = "."; "/mws-restaurant-stage-1";
  */
 document.addEventListener('DOMContentLoaded', (event) => {
   initMap();
+  initReviews();
   registerServiceworker();
 });
 
@@ -104,6 +105,17 @@ initMap = () => {
   });
 }
 
+initReviews = () => {
+  fetchRestaurantReviewFromURL((error, reviews) => {
+    if (error) { // Got an error!
+      console.error(error);
+    }
+    else {
+      self.reviews = reviews;
+    }
+  })
+}
+
 /* window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
@@ -141,6 +153,33 @@ fetchRestaurantFromURL = (callback) => {
       }
       fillRestaurantHTML();
       callback(null, restaurant)
+    });
+  }
+}
+
+
+/**
+ * Get current restaurant's review from page URL.
+ */
+fetchRestaurantReviewFromURL = (callback) => {
+  if (self.reviews) { // reviews already fetched!
+    callback(null, self.reviews)
+    return;
+  }
+  const id = getParameterByName('id');
+  if (!id) { // no id found in URL
+    error = 'No restaurant id in URL'
+    callback(error, null);
+  }
+  else {
+    DBHelper.fetchRestaurantReviews(id, (error, reviews) => {
+      self.reviews = reviews;
+      if (!reviews) {
+        console.error(error);
+        return;
+      }
+      //fillRestaurantHTML();
+      callback(null, reviews);
     });
   }
 }
@@ -226,7 +265,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   reviewForm.setAttribute('id', 'review_form');
   const nameInput = document.createElement('input');
   nameInput.setAttribute('id', 'rating_name');
-  nameInput.setAttribute('type','text');
+  nameInput.setAttribute('type', 'text');
   const ratingInput = document.createElement('select');
   for (var i = 1; i < 6; i++) {
     const option = document.createElement('option');
@@ -237,7 +276,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const nameLabel = document.createElement('label');
   nameLabel.classList = 'review-labels';
   nameLabel.setAttribute('for', nameInput.getAttribute('id'));
-  nameLabel.innerText = 'Name';  
+  nameLabel.innerText = 'Name';
   nameLabel.classList = 'review-labels';
   ratingInput.setAttribute('value', '1');
   ratingInput.setAttribute('id', 'rating')
@@ -263,17 +302,21 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   postReviewButton.innerText = 'Post review';
   postReviewButton.addEventListener('click', event => {
     event.preventDefault();
-    postReviewButton.setAttribute('disabled',true);
+    if (ratingText.value.trim() == '' || nameInput.value.trim() == '') {
+      alert('Reviewer name or comment cannot be empty');
+      return false;
+    }
+    postReviewButton.setAttribute('disabled', true);
     Notification.requestPermission();
     const date = Date.now();
     const review = {
-      'syncId':date,
+      'syncId': date,
       'restaurant_id': self.restaurant.id,
       'name': nameInput.value,
       'rating': parseInt(ratingInput.value),
-      'comments':ratingText.value
+      'comments': ratingText.value
     };
-    DBHelper.addToPendingReviews(review).then(() =>{
+    DBHelper.addToPendingReviews(review).then(() => {
       doReviewgroundSync(date);
     })
   })
@@ -297,10 +340,10 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 }
 
 
-doReviewgroundSync=(reviewId) =>{
-  if('SyncManager' in window){
-    navigator.serviceWorker.ready.then(function(swRegistration) {
-      swRegistration.sync.register('reviewSync-'+reviewId);
+doReviewgroundSync = (reviewId) => {
+  if ('SyncManager' in window) {
+    navigator.serviceWorker.ready.then(function (swRegistration) {
+      swRegistration.sync.register('reviewSync-' + reviewId);
     })
   }
 }

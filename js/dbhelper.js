@@ -7,6 +7,7 @@
 this.dbPromised = null;
 this.restaurant_store = 'restaurant-store';
 this.review_store = 'review_store';
+this.restaurant_review_store = 'restaurant-review-store';
 this.favourite_store = 'favourite_store';
 this.restaurant_key = 'restaurantId';
 class DBHelper {
@@ -27,7 +28,7 @@ class DBHelper {
 
   static initDB() {
     if (this.dbPromised == null) {
-      this.dbPromised = idb.open('restaurant-db', 4, upgradeDB => {
+      this.dbPromised = idb.open('restaurant-db', 5, upgradeDB => {
         switch (upgradeDB.oldVersion) {
           case 0:// this is the very first verison
             upgradeDB.createObjectStore(restaurant_store, { keyPath: 'id' });
@@ -37,6 +38,9 @@ class DBHelper {
           case 4://delete old review store and recreate it
             upgradeDB.deleteObjectStore(review_store);
             upgradeDB.createObjectStore(review_store, { keyPath: 'syncId' });
+          case 5://reviews for restaurants
+            let restaurantReviewsStore = upgradeDB.createObjectStore(restaurant_review_store, { keyPath: 'id' });
+            restaurantReviewsStore.createIndex('restaurantIndex', 'restaurant_id');
         }
       })
     }
@@ -88,6 +92,57 @@ class DBHelper {
 
   }
 
+
+  /**
+ * Fetch all restaurant's reviews.
+ */
+  static fetchRestaurantReviews(restaurantId,callback) {
+    //setup database if it does nort exist;
+    DBHelper.initDB();
+
+    //first fetch data from db. if no data from db, then fetch from server;
+    this.dbPromised.then(db => {
+      let readAllTransaction = db.transaction(restaurant_review_store, 'readonly');
+      let restaurantReviewStore = readAllTransaction.objectStore(restaurant_review_store);
+      //filter by restaurantid
+      let restaurantReviewIndex = restaurantReviewStore.index('restaurantIndex');
+      restaurantReviewIndex.getAll(IDBKeyRange.only(parseInt(restaurantId))).then(reviews => {
+        //console.log("DBREST:" + restaurants.length);
+        if (reviews != null && (reviews.length > 0)) {// data in db.
+          callback(null, reviews);
+        }
+        else {// data not in db so fetch from server
+          let xhr = new XMLHttpRequest();
+          let url = `http://localhost:1337/reviews/?restaurant_id=${restaurantId}`;
+          console.log(`URL ${url}`);
+          xhr.open('GET', url);
+          xhr.onload = () => {
+            if (xhr.status === 200) { // Got a success response from server!
+              const json = JSON.parse(xhr.responseText);
+              const reviews = json;
+              //save json to DB
+              let writeAllTransaction = db.transaction(restaurant_review_store, 'readwrite');
+              let restaurantReviewsStoreForPut = writeAllTransaction.objectStore(restaurant_review_store);
+              reviews.forEach(reviewItem => {
+                restaurantReviewsStoreForPut.put(reviewItem);
+              });
+              writeAllTransaction.complete;
+
+              callback(null, reviews);
+            } else { // Oops!. Got an error from server.
+              const error = (`Request failed. Returned status of ${xhr.status}`);
+              callback(error, null);
+            }
+          };
+          xhr.send();
+        }
+        readAllTransaction.complete;
+      });
+    });
+
+
+  }
+
   /**
    * Fetch a restaurant by its ID.
    */
@@ -106,6 +161,7 @@ class DBHelper {
       }
     });
   }
+
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.

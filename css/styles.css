@@ -452,6 +452,13 @@ a.skip-to-main:focus, a.skip-to-main:active{
   text-transform: uppercase;
 }
 
+#review_button:disabled{
+  background-color: #C9C9C9;
+  color: #000;
+  cursor: not-allowed;
+}
+
+
 /*Styling for medium*/
 @media screen and (min-width: 421px) and (max-width: 899px){
   #restaurants-list{
