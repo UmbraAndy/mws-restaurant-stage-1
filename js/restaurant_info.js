@@ -260,6 +260,7 @@ fillReviewsHTML = (reviews = self.reviews) => {
   container.appendChild(title);
   //add form for review
   const reviewForm = document.createElement('form');
+  reviewForm.setAttribute('role','form')
   const nameDiv = document.createElement('div');
   nameDiv.setAttribute('id', 'name-div');
   const ratingSelectDiv = document.createElement('div');
@@ -267,11 +268,14 @@ fillReviewsHTML = (reviews = self.reviews) => {
   const ratingTexttDiv = document.createElement('div');
   reviewForm.setAttribute('id', 'review_form');
   const nameInput = document.createElement('input');
+  nameInput.setAttribute('role','textbox');
   nameInput.setAttribute('id', 'rating_name');
   nameInput.setAttribute('type', 'text');
   const ratingInput = document.createElement('select');
+  ratingInput.setAttribute('role','list');
   for (var i = 1; i < 6; i++) {
     const option = document.createElement('option');
+    option.setAttribute('role','listitem');
     option.value = i;
     option.innerText = i;
     ratingInput.append(option);
@@ -292,6 +296,7 @@ fillReviewsHTML = (reviews = self.reviews) => {
   ratingSelectDiv.append(ratingLabel);
   ratingSelectDiv.append(ratingInput);
   const ratingText = document.createElement('textarea');
+  ratingText.setAttribute('role','textbox');
   ratingText.setAttribute('id', 'review_text');
   ratingText.setAttribute('rows', '4');
   const reviewTextLabel = document.createElement('label')
